@@ -4,1355 +4,181 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="robots" content="noindex, nofollow" />
-<title>業務効率化プロンプト設計ツール</title>
+<title>PROMPT LAB — AI初心者向けプロンプト設計ツール</title>
 <style>
   html, body { margin: 0; padding: 0; }
   * { box-sizing: border-box; }
-  button { font: inherit; }
-  textarea { font: inherit; }
+  a { text-decoration: none; }
 
   @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap');
 
-  #gate {
-    min-height: 100vh;
-    background: #FFF6EE;
-    background-image: radial-gradient(circle at 15% 20%, #E4EBFF 0%, transparent 40%), radial-gradient(circle at 85% 80%, #DFF7F4 0%, transparent 40%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  body {
     font-family: 'Hiragino Sans', 'Yu Gothic', -apple-system, BlinkMacSystemFont, sans-serif;
-    padding: 16px;
+    background: #FFFBF5;
+    background-image:
+      radial-gradient(circle at 10% 10%, #FFE3EA 0%, transparent 30%),
+      radial-gradient(circle at 90% 15%, #FFE7D6 0%, transparent 30%),
+      radial-gradient(circle at 15% 90%, #DFF4E9 0%, transparent 30%),
+      radial-gradient(circle at 85% 85%, #E4EBFF 0%, transparent 30%),
+      radial-gradient(circle at 50% 50%, #ECE4FD 0%, transparent 40%);
+    color: #3D3641;
+    padding: 40px 16px 64px;
   }
-  #gate .box {
+
+  .wrap { max-width: 640px; margin: 0 auto; }
+
+  .hero {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .hero .logo {
+    font-family: 'Zen Maru Gothic', 'Hiragino Maru Gothic ProN', sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    background-image: linear-gradient(90deg, #FF6F91, #FF8A4C, #34B87A, #5B8DEF, #9B7BEF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 6px;
+  }
+  .hero p {
+    font-size: 14px;
+    color: #8C7F8E;
+    margin: 0;
+  }
+
+  .card {
     background: #FFFFFF;
     border-radius: 24px;
-    box-shadow: 0 6px 20px rgba(74,63,65,0.1);
-    padding: 32px 28px;
-    width: 100%;
-    max-width: 360px;
-    text-align: center;
+    box-shadow: 0 6px 20px rgba(61,54,65,0.08);
+    padding: 24px 26px;
+    margin-bottom: 20px;
   }
-  #gate .eyebrow {
-    display: inline-block;
-    font-family: 'Zen Maru Gothic', 'Hiragino Maru Gothic ProN', 'Yu Gothic', sans-serif;
-    font-size: 13px;
-    font-weight: 900;
-    letter-spacing: 0.04em;
-    color: #2F52A8;
-    margin-bottom: 4px;
+  .card h2 {
+    font-family: 'Zen Maru Gothic', 'Hiragino Maru Gothic ProN', sans-serif;
+    font-size: 17px;
+    margin: 0 0 14px;
   }
-  #gate .toolname {
-    font-family: 'Zen Maru Gothic', 'Hiragino Maru Gothic ProN', 'Yu Gothic', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    color: #4A3F41;
-    margin-bottom: 16px;
-    line-height: 1.4;
-  }
-  #gate h1 {
-    margin: 0 0 18px;
-    font-family: 'Hiragino Maru Gothic ProN', 'UD Digi Kyokasho NK-R', 'Yu Gothic', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    color: #8C7B7E;
-    padding-top: 14px;
-    border-top: 1px dashed #F1E4E8;
-  }
-  #gate input {
-    width: 100%;
-    box-sizing: border-box;
+
+  .tool-list { display: grid; gap: 10px; }
+  .tool-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
     border: 2px solid #F1E4E8;
-    border-radius: 16px;
-    padding: 10px 14px;
-    font-size: 16px;
-    margin-bottom: 12px;
   }
-  #gate button {
-    width: 100%;
-    padding: 12px;
+  .tool-item .dot {
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  }
+  .tool-item .name { font-weight: 700; font-size: 14px; }
+  .tool-item .desc { font-size: 12px; color: #8C7F8E; margin-top: 2px; }
+
+  .steps { display: grid; gap: 10px; margin-top: 4px; }
+  .step { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; line-height: 1.6; }
+  .step .num {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #3D3641; color: #fff; font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  .cta {
+    display: block;
+    text-align: center;
+    padding: 16px;
     border-radius: 999px;
-    background: #5B8DEF;
+    background-image: linear-gradient(90deg, #FF6F91, #FF8A4C, #34B87A, #5B8DEF, #9B7BEF);
     color: #FFFFFF;
-    border: none;
-    font-size: 14px;
     font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 4px 0 #3E68C7;
+    font-size: 15px;
+    box-shadow: 0 4px 0 #3D3641;
+    margin-top: 6px;
   }
-  #gate .err {
-    color: #3E68C7;
-    font-size: 12.5px;
-    font-weight: 600;
-    margin-top: 10px;
-    min-height: 16px;
+
+  .note-box {
+    font-size: 12px;
+    color: #8C7F8E;
+    line-height: 1.7;
+    background: #FFF3D6;
+    border: 2px solid #FFE3A8;
+    border-radius: 16px;
+    padding: 14px 16px;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 11.5px;
+    color: #B3A5A8;
   }
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<div id="gate">
-  <div class="box">
-    <div class="eyebrow">PROMPT LAB</div>
-    <div class="toolname">業務効率化プロンプト設計ツール</div>
-    <h1>合言葉を入力してください</h1>
-    <input type="password" id="gate-input" placeholder="合言葉" autocomplete="off" />
-    <button id="gate-btn">開く</button>
-    <div class="err" id="gate-err"></div>
+  <div class="hero">
+    <div class="logo">PROMPT LAB</div>
+    <p>AI初心者のための、選ぶだけで作れるプロンプト設計ツール</p>
   </div>
-</div>
 
-<div id="root" style="display:none"></div>
-
-<script>
-  // ここを好きな合言葉に変更してください
-  const CORRECT_PASSWORD = "seisansei";
-
-  function unlock() {
-    document.getElementById("gate").style.display = "none";
-    document.getElementById("root").style.display = "block";
-    sessionStorage.setItem("pb_unlocked_business", "1");
-  }
-
-  document.getElementById("gate-btn").addEventListener("click", tryUnlock);
-  document.getElementById("gate-input").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") tryUnlock();
-  });
-
-  function tryUnlock() {
-    const val = document.getElementById("gate-input").value;
-    if (val === CORRECT_PASSWORD) {
-      unlock();
-    } else {
-      document.getElementById("gate-err").textContent = "合言葉が違います。もう一度確認してください。";
-    }
-  }
-
-  if (sessionStorage.getItem("pb_unlocked_business") === "1") {
-    unlock();
-  }
-</script>
-
-<script>
-  window.addEventListener("error", function (e) {
-    const rootEl = document.getElementById("root");
-    const gateEl = document.getElementById("gate");
-    if (rootEl && !rootEl.innerHTML) {
-      if (gateEl) gateEl.style.display = "none";
-      rootEl.style.display = "block";
-      rootEl.innerHTML =
-        "<div style='padding:24px;font-family:sans-serif;color:#B0472F;'>読み込みエラー: " +
-        (e && e.message ? e.message : "詳細不明のエラー") +
-        "<br>ファイルまたはネットワーク（社内フィルタ・拡張機能など）が原因の可能性があります。</div>";
-    }
-  });
-</script>
-
-<script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
-<script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
-<script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
-
-<script type="text/plain" id="app-source">
-
-const PURPOSES = [
-  {
-    id: "organize",
-    label: "データ整理",
-    sub: "バラバラの情報をまとめたい",
-    role: "データ整理・情報整理の専門家",
-  },
-  {
-    id: "analyze",
-    label: "データ分析",
-    sub: "数字から傾向や課題を見つけたい",
-    role: "データ分析コンサルタント",
-  },
-  {
-    id: "automate",
-    label: "業務自動化",
-    sub: "繰り返し作業を仕組み化したい",
-    role: "業務自動化・効率化の専門家",
-  },
-  {
-    id: "other",
-    label: "その他の業務効率化",
-    sub: "上の3つに当てはまらない",
-    role: "業務効率化の専門家",
-  },
-];
-
-const DATA_STATES = [
-  { id: "excel", label: "Excel・スプレッドシートにまとまっている", text: "Excelやスプレッドシートにデータがまとまっている" },
-  { id: "paper", label: "紙・手書きの資料が中心", text: "紙や手書きの資料が中心で、デジタル化できていない" },
-  { id: "scattered", label: "店舗や担当者ごとにバラバラ", text: "店舗や担当者ごとにデータが散らばっていて、全体を把握できていない" },
-];
-
-const STRESSES = [
-  { id: "time", label: "時間がかかりすぎる", text: "集計や整理に時間がかかりすぎている" },
-  { id: "mistake", label: "手作業でミスが起きる", text: "手作業でのミスが起きやすい" },
-  { id: "compare", label: "比較・集計がしづらい", text: "店舗や期間ごとの比較・集計がしづらい" },
-  { id: "tacit", label: "特定の人しか対応できない", text: "特定の担当者しか対応方法が分からず、属人化している" },
-];
-
-const STEP_INTROS = [
-  "初めてで大丈夫です。近いものを選ぶだけで進められます。",
-  "迷ったら、下の選択肢をタップするだけでOKです。文章は自動で入ります（あとで自由に書き換えられます）。",
-  "ここは選ぶだけで完了します。不安な項目は「わからない」のままでも大丈夫です。",
-  "",
-];
-
-const FORMATS = [
-  { label: "箇条書き", desc: "・で短くポイントを並べる形" },
-  { label: "表形式", desc: "項目ごとに表でまとめる形" },
-  { label: "手順書（ステップ形式）", desc: "1→2→3と順番に進める形" },
-  { label: "文章でのレポート", desc: "説明文でつながった読み物の形" },
-];
-const LEVELS = [
-  { id: "easy", label: "やさしく", desc: "専門用語なし、初心者向けに" },
-  { id: "normal", label: "専門的でもOK", desc: "業界用語を使ってもよい" },
-];
-const TOOLS = ["ChatGPT", "Claude", "Gemini", "まだ決めていない"];
-
-const CAUTIONS = [
-  "より具体的に伝えると、結果もブラッシュアップされます",
-  "性的表現・政治・戦争などを含む内容は、AIツール側のアカウント制限に引っかかる場合があります",
-  "生成結果の著作権・商用利用については、利用するAIツールの規約に従ってください",
-  "実在の人物・有名キャラクター・商標を想起させる指定は避けてください",
-  "生成したプロンプトは、品質改善のため管理者側で確認できる仕様となっております。あらかじめご了承ください",
-];
-
-const STEP_LABELS = ["目的", "背景", "出力条件", "完成図面"];
-
-function buildPrompt(s) {
-  const purpose = PURPOSES.find((p) => p.id === s.purpose) || PURPOSES[3];
-  const lines = [];
-
-  lines.push(`あなたは${purpose.role}です。`);
-  lines.push("");
-  lines.push("【背景】");
-  lines.push(s.targetData ? `対象データ・情報：${s.targetData}` : "対象データ・情報：（未記入）");
-  lines.push(s.painPoint ? `現在困っていること：${s.painPoint}` : "現在困っていること：（未記入）");
-  lines.push("");
-  lines.push("【依頼内容】");
-  lines.push(
-    s.desiredOutput
-      ? `以下を実現するために、${purpose.label}を手伝ってください：${s.desiredOutput}`
-      : `${purpose.label}を手伝ってください。`
-  );
-  lines.push("");
-  lines.push("【出力条件】");
-  lines.push(`・形式：${s.outputFormat || "箇条書き"}`);
-  const level = LEVELS.find((l) => l.id === s.expertiseLevel) || LEVELS[0];
-  lines.push(`・説明のレベル：${level.label}（${level.desc}）`);
-  lines.push("・不明な点があれば、先に質問してから進めてください");
-  lines.push("");
-  lines.push("【進め方】");
-  lines.push("1. まず、このゴールが達成できたときの完成イメージを、できるだけ高品質なモックで示してください（ラフスケッチではなく、実物に近い見た目・体裁を意識してください。例：アプリならほぼ完成形に近い画面イメージ、表の整理なら実際に使う体裁に近いサンプル表など）");
-  lines.push("2. 次に、そのゴールまでにおおよそ何ステップ・何回のやり取りが必要そうか、目安を伝えてください");
-  lines.push("3. その上で、方針を短く提示してください");
-  lines.push("4. 私が確認・修正指示を出したら、それを反映して仕上げてください");
-
-  if (s.extraRequest) {
-    lines.push("");
-    lines.push("【追加のお願い】");
-    lines.push(s.extraRequest);
-  }
-
-  return lines.join("\n");
-}
-
-const PRINCIPLES = [
-  { tag: "役割設定", body: "AIに「誰として答えるか」を最初に指定すると、回答の視点がぶれません。" },
-  { tag: "背景情報", body: "現状と困りごとを伝えることで、的外れな提案を防げます。" },
-  { tag: "出力条件", body: "形式・レベルを指定すると、初回から使える形で返ってきます。" },
-  { tag: "完成イメージの提示", body: "ラフではなく高品質なモックを先に見せてもらうことで、「頼りない」ではなく「進んでいる」実感を持てます。" },
-  { tag: "ステップ数の明示", body: "あと何回くらいで終わるかが分かると、途中で不安になって離脱しにくくなります。" },
-];
-
-function HelpNote({ children }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <span style={{ position: "relative", display: "inline-block" }}>
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-label="なぜこれを聞くの？"
-        style={{
-          border: "none",
-          background: "#2FB6AA",
-          color: "#FFFFFF",
-          cursor: "pointer",
-          verticalAlign: "middle",
-          padding: 0,
-          marginLeft: 6,
-          width: 18,
-          height: 18,
-          borderRadius: "50%",
-          lineHeight: 0,
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <HelpCircle size={13} />
-      </button>
-      {open && (
-        <div
-          style={{
-            position: "absolute",
-            zIndex: 5,
-            top: "140%",
-            left: 0,
-            width: 220,
-            background: "#2FB6AA",
-            color: "#FFFFFF",
-            fontSize: 11.5,
-            fontWeight: 500,
-            lineHeight: 1.5,
-            padding: "12px 14px",
-            borderRadius: 14,
-            boxShadow: "0 6px 16px rgba(47,182,170,0.35)",
-          }}
-        >
-          {children}
-        </div>
-      )}
-    </span>
-  );
-}
-
-const VERSION = "1.1.0";
-const CHANGELOG = [
-  { version: "1.1.0", date: "2026-07-27", notes: "各種プロンプトの精度改善、履歴・注意事項の追加" },
-  { version: "1.0.0", date: "2026-07-27", notes: "初回リリース" },
-];
-
-const { useState, useRef } = React;
-
-/* ---------- 小さなアイコン(lucide-reactの代わりに絵文字ベースで実装) ---------- */
-const Icon = ({ children, size = 14 }) => (
-  <span style={{ display: "inline-flex", width: size, height: size, alignItems: "center", justifyContent: "center", lineHeight: 0, fontSize: size }}>
-    {children}
-  </span>
-);
-const ArrowLeft = ({ size = 14 }) => <Icon size={size}>←</Icon>;
-const ArrowRight = ({ size = 14 }) => <Icon size={size}>→</Icon>;
-const Copy = ({ size = 14 }) => <Icon size={size}>⧉</Icon>;
-const Check = ({ size = 14 }) => <Icon size={size}>✓</Icon>;
-const RotateCcw = ({ size = 14 }) => <Icon size={size}>↺</Icon>;
-const Sparkles = ({ size = 14 }) => <Icon size={size}>✨</Icon>;
-const HelpCircle = ({ size = 14 }) => <Icon size={size}>?</Icon>;
-
-const HISTORY_KEY = "promptlab_business_history";
-const HISTORY_LIMIT = 100;
-
-async function copyText(text) {
-  try {
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      await navigator.clipboard.writeText(text);
-      return true;
-    }
-  } catch (e) {}
-  try {
-    const el = document.createElement("textarea");
-    el.value = text;
-    el.style.position = "fixed";
-    el.style.opacity = "0";
-    document.body.appendChild(el);
-    el.focus();
-    el.select();
-    const ok = document.execCommand && document.execCommand("copy");
-    document.body.removeChild(el);
-    return !!ok;
-  } catch (e) {}
-  return false;
-}
-
-function csvCell(v) {
-  const s = String(v ?? "").replace(/"/g, '""');
-  return `"${s}"`;
-}
-
-function downloadHistoryCSV(history) {
-  const header = ["日時", "概要", "プロンプト"].map(csvCell).join(",");
-  const rows = history.map((h) => [h.timestamp, h.label, h.prompt].map(csvCell).join(","));
-  const csv = "\uFEFF" + [header, ...rows].join("\r\n");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `prompt-history-${new Date().toISOString().slice(0, 10)}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-function buildHistoryLabel(s) {
-  const purpose = PURPOSES.find((p) => p.id === s.purpose);
-  const detail = s.painPoint || s.targetData || s.desiredOutput || "";
-  const label = `${purpose ? purpose.label : "業務効率化"} / ${detail}`.trim();
-  return label.length > 60 ? label.slice(0, 60) + "…" : label;
-}
-
-// ここに、GASを「ウェブアプリとしてデプロイ」した後のURLを貼り付けてください。
-// 未設定の間は何も送信されません（エラーにもなりません）。
-const GAS_LOG_URL = ""; // 例: "https://script.google.com/macros/s/xxxxx/exec"
-
-function logToAdminSheet(toolName, label, promptText) {
-  if (!GAS_LOG_URL) return;
-  try {
-    fetch(GAS_LOG_URL, {
-      method: "POST",
-      mode: "no-cors", // GAS側はCORSヘッダを返さないため、no-corsで送りっぱなしにする
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({
-        timestamp: new Date().toLocaleString("ja-JP"),
-        tool: toolName,
-        label,
-        prompt: promptText,
-      }),
-    }).catch(() => {});
-  } catch (e) {
-    // 送信に失敗しても、ツール自体の動作は止めない
-  }
-}
-
-function PromptBlueprint() {
-  const [step, setStep] = useState(0);
-  const TUTORIAL_KEY = HISTORY_KEY + "_tutorial_seen";
-  const [showTutorial, setShowTutorial] = useState(() => {
-    try {
-      return localStorage.getItem(TUTORIAL_KEY) !== "1";
-    } catch (e) {
-      return true;
-    }
-  });
-  const dismissTutorial = () => {
-    setShowTutorial(false);
-    try {
-      localStorage.setItem(TUTORIAL_KEY, "1");
-    } catch (e) {}
-  };
-  const [copied, setCopied] = useState(false);
-  const [dataState, setDataState] = useState("");
-  const [mainStress, setMainStress] = useState("");
-  const [s, setS] = useState({
-    purpose: "",
-    targetData: "",
-    painPoint: "",
-    desiredOutput: "",
-    outputFormat: "",
-    expertiseLevel: "easy",
-    aiTool: "",
-    extraRequest: "",
-  });
-
-  const update = (k, v) => setS((prev) => ({ ...prev, [k]: v }));
-  const canNext = step === 0 ? !!s.purpose : true;
-  const prompt = buildPrompt(s);
-
-  const [history, setHistoryState] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
-    } catch (e) {
-      return [];
-    }
-  });
-  const setHistory = (updater) => {
-    setHistoryState((prev) => {
-      const next = typeof updater === "function" ? updater(prev) : updater;
-      try {
-        localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
-      } catch (e) {}
-      return next;
-    });
-  };
-  const [showHistory, setShowHistory] = useState(false);
-  const [showChangelog, setShowChangelog] = useState(false);
-  const [copiedHistoryId, setCopiedHistoryId] = useState(null);
-
-  const addHistoryEntry = (label, promptText) => {
-    const entry = {
-      id: Date.now().toString(),
-      timestamp: new Date().toLocaleString("ja-JP"),
-      label,
-      prompt: promptText,
-    };
-    setHistory((prev) => [entry, ...prev].slice(0, HISTORY_LIMIT));
-  };
-  const deleteHistoryEntry = (id) => setHistory((prev) => prev.filter((h) => h.id !== id));
-  const clearAllHistory = () => {
-    if (window.confirm("保存した履歴をすべて削除します。よろしいですか？")) {
-      setHistory([]);
-    }
-  };
-  const copyHistoryEntry = async (h) => {
-    const ok = await copyText(h.prompt);
-    if (ok) {
-      setCopiedHistoryId(h.id);
-      setTimeout(() => setCopiedHistoryId(null), 1500);
-    }
-  };
-
-  const promptRef = React.useRef(null);
-  const [copyFailed, setCopyFailed] = useState(false);
-
-  const handleCopy = async () => {
-    setCopyFailed(false);
-
-    // 1) modern clipboard API
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(prompt);
-        setCopied(true);
-        addHistoryEntry(buildHistoryLabel(s), prompt);
-        logToAdminSheet("業務効率化", buildHistoryLabel(s), prompt);
-        setTimeout(() => setCopied(false), 1800);
-        return;
-      }
-    } catch (e) {
-      // fall through
-    }
-
-    // 2) select the textarea + execCommand (reliable inside iframes)
-    try {
-      const el = promptRef.current;
-      if (el) {
-        el.focus();
-        el.select();
-        el.setSelectionRange(0, prompt.length); // for mobile Safari
-        const ok = document.execCommand && document.execCommand("copy");
-        if (ok) {
-          setCopied(true);
-          addHistoryEntry(buildHistoryLabel(s), prompt);
-          logToAdminSheet("業務効率化", buildHistoryLabel(s), prompt);
-          setTimeout(() => setCopied(false), 1800);
-          return;
-        }
-      }
-    } catch (e) {
-      // fall through
-    }
-
-    // 3) last resort: text is already selected from step 2 — tell the user to copy manually
-    setCopyFailed(true);
-  };
-
-  const reset = () => {
-    setS({
-      purpose: "",
-      targetData: "",
-      painPoint: "",
-      desiredOutput: "",
-      outputFormat: "",
-      expertiseLevel: "easy",
-      aiTool: "",
-      extraRequest: "",
-    });
-    setStep(0);
-  };
-
-  return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#FFF6EE",
-        backgroundImage:
-          "radial-gradient(circle at 12% 12%, #E4EBFF 0%, transparent 38%), radial-gradient(circle at 88% 85%, #DFF7F4 0%, transparent 38%), radial-gradient(circle at 90% 8%, #FFF3D6 0%, transparent 30%)",
-        fontFamily:
-          "'Hiragino Sans', 'Yu Gothic', -apple-system, BlinkMacSystemFont, sans-serif",
-        color: "#4A3F41",
-        padding: "32px 16px 64px",
-      }}
-    >
-      <style>{"@import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap');"}</style>
-
-      {showTutorial && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(74,63,65,0.55)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 50,
-            padding: 16,
-          }}
-        >
-          <div
-            style={{
-              background: "#FFFFFF",
-              borderRadius: 24,
-              padding: "28px 26px",
-              maxWidth: 400,
-              width: "100%",
-              boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
-            }}
-          >
-            <div
-              style={{
-                display: "inline-block",
-                fontSize: 11,
-                letterSpacing: "0.1em",
-                color: "#2F52A8",
-                background: "#E4EBFF",
-                borderRadius: 999,
-                padding: "3px 10px",
-                fontWeight: 700,
-                marginBottom: 10,
-              }}
-            >
-              はじめての方へ
-            </div>
-            <h2 style={{ margin: "0 0 14px", fontFamily: headingFont, fontSize: 19, color: "#4A3F41" }}>
-              使い方はかんたん4ステップ
-            </h2>
-            <div style={{ display: "grid", gap: 10, marginBottom: 16 }}>
-              {[
-                ["1", "目的を選ぶ"],
-                ["2", "背景を教える（選ぶだけでもOK）"],
-                ["3", "出力条件を選ぶ"],
-                ["4", "完成したプロンプトをコピーして、ChatGPTやClaudeに貼り付ける"],
-              ].map(([n, t]) => (
-                <div key={n} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                  <span
-                    style={{
-                      width: 22,
-                      height: 22,
-                      borderRadius: "50%",
-                      background: "#5B8DEF",
-                      color: "#FFFFFF",
-                      fontSize: 12,
-                      fontWeight: 700,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {n}
-                  </span>
-                  <div style={{ fontSize: 13.5, color: "#4A3F41", lineHeight: 1.5, paddingTop: 1 }}>{t}</div>
-                </div>
-              ))}
-            </div>
-            <p style={{ fontSize: 12, color: "#8C7B7E", margin: "0 0 18px" }}>
-              わからない項目は空欄のままでも大丈夫です。あとから「戻る」でいつでも修正できます。
-            </p>
-            <button
-              onClick={dismissTutorial}
-              style={{
-                width: "100%",
-                padding: "12px",
-                borderRadius: 999,
-                background: "#5B8DEF",
-                color: "#FFFFFF",
-                border: "none",
-                fontSize: 14,
-                fontWeight: 700,
-                cursor: "pointer",
-                fontFamily: "inherit",
-                boxShadow: "0 4px 0 #3E68C7",
-              }}
-            >
-              はじめる
-            </button>
-          </div>
-        </div>
-      )}
-
-      <div style={{ maxWidth: 720, margin: "0 auto" }}>
-        {/* Title block */}
-        <div
-          style={{
-            borderRadius: 24,
-            background: "#FFFFFF",
-            boxShadow: "0 6px 20px rgba(74,63,65,0.08)",
-            padding: "20px 24px",
-            marginBottom: 22,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
-              <span style={{ fontFamily: headingFont, fontSize: 16, fontWeight: 900, letterSpacing: "0.02em", color: "#2F52A8" }}>
-                PROMPT LAB
-              </span>
-              <span style={{ fontSize: 11, color: "#8C7B7E", fontWeight: 500 }}>by さとぽん</span>
-            </div>
-            <h1
-              style={{
-                margin: 0,
-                fontFamily: headingFont,
-                fontSize: 22,
-                fontWeight: 700,
-                letterSpacing: "-0.01em",
-                lineHeight: 1.4,
-                color: "#4A3F41",
-              }}
-            >
-              業務効率化
-              <br />
-              プロンプト設計ツール
-            </h1>
-          </div>
-          <div
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: "50%",
-              background: "#FFF3D6",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            <Sparkles size={22} strokeWidth={2} color="#E0A421" />
-          </div>
-        </div>
-
-        {/* History toggle */}
-        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 14 }}>
-          <button
-            onClick={() => setShowHistory((v) => !v)}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "8px 16px",
-              borderRadius: 999,
-              background: showHistory ? "#4A3F41" : "#FFFFFF",
-              color: showHistory ? "#FFFFFF" : "#4A3F41",
-              border: "2px solid #F1E4E8",
-              fontSize: 12.5,
-              fontWeight: 700,
-              cursor: "pointer",
-              fontFamily: "inherit",
-            }}
-          >
-            📋 履歴（{history.length}）
-          </button>
-        </div>
-
-        {showHistory && (
-          <div
-            style={{
-              borderRadius: 24,
-              background: "#FFFFFF",
-              boxShadow: "0 6px 20px rgba(74,63,65,0.08)",
-              padding: "22px 24px",
-              marginBottom: 22,
-            }}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, flexWrap: "wrap", gap: 8 }}>
-              <h3 style={{ margin: 0, fontFamily: headingFont, fontSize: 16, color: "#4A3F41" }}>
-                保存した履歴
-              </h3>
-              <div style={{ display: "flex", gap: 8 }}>
-                <button
-                  onClick={() => downloadHistoryCSV(history)}
-                  disabled={history.length === 0}
-                  style={{ ...chipButtonSmall, opacity: history.length === 0 ? 0.4 : 1 }}
-                >
-                  CSVダウンロード
-                </button>
-                <button
-                  onClick={clearAllHistory}
-                  disabled={history.length === 0}
-                  style={{ ...chipButtonSmall, opacity: history.length === 0 ? 0.4 : 1, color: "#3E68C7" }}
-                >
-                  全部削除
-                </button>
-              </div>
-            </div>
-
-            {history.length === 0 ? (
-              <p style={{ fontSize: 13, color: "#8C7B7E", margin: 0 }}>
-                まだ保存されたプロンプトはありません。「プロンプトをコピー」すると自動で保存されます。
-              </p>
-            ) : (
-              <div style={{ display: "grid", gap: 10 }}>
-                {history.map((h) => (
-                  <div key={h.id} style={{ border: "2px solid #F1E4E8", borderRadius: 14, padding: "12px 14px" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
-                      <div style={{ fontSize: 11, color: "#B3A5A8" }}>{h.timestamp}</div>
-                      <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
-                        <button onClick={() => copyHistoryEntry(h)} style={chipButtonSmall}>
-                          {copiedHistoryId === h.id ? "コピー済み" : "コピー"}
-                        </button>
-                        <button onClick={() => deleteHistoryEntry(h.id)} style={{ ...chipButtonSmall, color: "#3E68C7" }}>
-                          削除
-                        </button>
-                      </div>
-                    </div>
-                    <div style={{ fontWeight: 700, fontSize: 13, marginTop: 4, color: "#4A3F41" }}>{h.label}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Step bubbles */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", margin: "0 4px 22px" }}>
-          {STEP_LABELS.map((label, i) => {
-            const active = i <= step;
-            const isLast = i === STEP_LABELS.length - 1;
-            return (
-              <React.Fragment key={label}>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                  <div
-                    style={{
-                      width: 30,
-                      height: 30,
-                      borderRadius: "50%",
-                      background: active ? "#5B8DEF" : "#FFFFFF",
-                      border: active ? "none" : "2px solid #F1E4E8",
-                      color: active ? "#FFFFFF" : "#C9BBBE",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 13,
-                      fontWeight: 700,
-                      boxShadow: active ? "0 3px 8px rgba(91,141,239,0.4)" : "none",
-                    }}
-                  >
-                    {i + 1}
-                  </div>
-                  <div
-                    style={{
-                      marginTop: 6,
-                      fontSize: 10.5,
-                      fontWeight: active ? 700 : 500,
-                      color: active ? "#4A3F41" : "#C9BBBE",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {label}
-                  </div>
-                </div>
-                {!isLast && (
-                  <div
-                    style={{
-                      flex: 1,
-                      height: 3,
-                      borderRadius: 2,
-                      margin: "0 4px 18px",
-                      background: i < step ? "#5B8DEF" : "#F1E4E8",
-                    }}
-                  />
-                )}
-              </React.Fragment>
-            );
-          })}
-        </div>
-
-        {/* Card */}
-        <div
-          style={{
-            borderRadius: 24,
-            background: "#FFFFFF",
-            boxShadow: "0 6px 20px rgba(74,63,65,0.08)",
-            padding: "28px 26px",
-            minHeight: 340,
-          }}
-        >
-          {step === 0 && (
-            <div>
-              <h2 style={sectionTitle}>何を効率化したいですか？</h2>
-              <p style={sectionSub}>{STEP_INTROS[0]}</p>
-              <div style={{ display: "grid", gap: 10, marginTop: 18 }}>
-                {PURPOSES.map((p, i) => {
-                  const dots = ["#5B8DEF", "#2FB6AA", "#FFC93C", "#8C7B7E"];
-                  return (
-                    <button
-                      key={p.id}
-                      onClick={() => update("purpose", p.id)}
-                      style={{
-                        textAlign: "left",
-                        borderRadius: 16,
-                        padding: "14px 16px",
-                        border:
-                          s.purpose === p.id ? "2px solid #5B8DEF" : "2px solid #F1E4E8",
-                        background: s.purpose === p.id ? "#E4EBFF" : "#FFFFFF",
-                        cursor: "pointer",
-                        fontFamily: "inherit",
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: 12,
-                      }}
-                    >
-                      <span
-                        style={{
-                          width: 10,
-                          height: 10,
-                          borderRadius: "50%",
-                          background: dots[i % dots.length],
-                          marginTop: 5,
-                          flexShrink: 0,
-                        }}
-                      />
-                      <span>
-                        <div style={{ fontWeight: 700, fontSize: 15, color: "#4A3F41" }}>{p.label}</div>
-                        <div style={{ fontSize: 13, color: "#8C7B7E", marginTop: 2 }}>{p.sub}</div>
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div
-                style={{
-                  marginTop: 20,
-                  borderRadius: 16,
-                  background: "#FFF3D6",
-                  border: "2px solid #FFE3A8",
-                  padding: "14px 16px",
-                }}
-              >
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#8A6B1F", marginBottom: 6 }}>
-                  ご利用にあたって
-                </div>
-                <ul style={{ margin: 0, paddingLeft: 18, fontSize: 12, color: "#6B5A2E", lineHeight: 1.7 }}>
-                  {CAUTIONS.map((c, i) => (
-                    <li key={i}>{c}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          )}
-
-          {step === 1 && (
-            <div>
-              <h2 style={sectionTitle}>背景を教えてください</h2>
-              <p style={sectionSub}>{STEP_INTROS[1]}</p>
-
-              <label style={fieldLabel}>
-                今のデータの状態は？
-                <HelpNote>AIに現状を伝えると、いきなり的外れな提案をされるのを防げます。</HelpNote>
-              </label>
-              <div style={{ display: "grid", gap: 8 }}>
-                {DATA_STATES.map((d) => (
-                  <button
-                    key={d.id}
-                    onClick={() => {
-                      setDataState(d.id);
-                      update("targetData", d.text);
-                    }}
-                    style={{ ...chip(dataState === d.id), textAlign: "left", width: "100%" }}
-                  >
-                    {d.label}
-                  </button>
-                ))}
-              </div>
-              <textarea
-                value={s.targetData}
-                onChange={(e) => update("targetData", e.target.value)}
-                placeholder="選ぶと自動で入ります。自分の言葉で書き換えてもOK"
-                style={{ ...textareaStyle, marginTop: 8 }}
-                rows={2}
-              />
-
-              <label style={{ ...fieldLabel, marginTop: 22 }}>
-                一番のストレスは？
-                <HelpNote>「何を解決したいか」がはっきりすると、AIの提案がぶれなくなります。</HelpNote>
-              </label>
-              <div style={{ display: "grid", gap: 8 }}>
-                {STRESSES.map((st) => (
-                  <button
-                    key={st.id}
-                    onClick={() => {
-                      setMainStress(st.id);
-                      update("painPoint", st.text);
-                    }}
-                    style={{ ...chip(mainStress === st.id), textAlign: "left", width: "100%" }}
-                  >
-                    {st.label}
-                  </button>
-                ))}
-              </div>
-              <textarea
-                value={s.painPoint}
-                onChange={(e) => update("painPoint", e.target.value)}
-                placeholder="選ぶと自動で入ります。自分の言葉で書き換えてもOK"
-                style={{ ...textareaStyle, marginTop: 8 }}
-                rows={2}
-              />
-
-              <label style={{ ...fieldLabel, marginTop: 22 }}>
-                最終的に何が欲しいですか？（わかれば書いてください）
-                <HelpNote>ここは空欄でも大丈夫。上の2つだけでも十分なプロンプトになります。</HelpNote>
-              </label>
-              <textarea
-                value={s.desiredOutput}
-                onChange={(e) => update("desiredOutput", e.target.value)}
-                placeholder="例：全店舗を横並びで比較できる一覧表　※わからなければ空欄でOK"
-                style={textareaStyle}
-                rows={2}
-              />
-            </div>
-          )}
-
-          {step === 2 && (
-            <div>
-              <h2 style={sectionTitle}>出力条件を決めてください</h2>
-              <p style={sectionSub}>{STEP_INTROS[2]}</p>
-
-              <label style={fieldLabel}>
-                回答をどんな形で受け取りたいですか？
-                <HelpNote>AIの答えの「見た目」の指定です。同じ内容でも、表なのか箇条書きなのかで読みやすさが変わります。</HelpNote>
-              </label>
-              <div style={{ display: "grid", gap: 8, marginBottom: 18 }}>
-                {FORMATS.map((f) => (
-                  <button
-                    key={f.label}
-                    onClick={() => update("outputFormat", f.label)}
-                    style={{ ...chip(s.outputFormat === f.label), textAlign: "left", width: "100%" }}
-                  >
-                    <div style={{ fontWeight: 700 }}>{f.label}</div>
-                    <div style={{ fontSize: 11.5, color: "#8C7B7E", fontWeight: 400 }}>{f.desc}</div>
-                  </button>
-                ))}
-              </div>
-
-              <label style={fieldLabel}>説明のレベル</label>
-              <div style={{ display: "flex", gap: 8, marginBottom: 18 }}>
-                {LEVELS.map((l) => (
-                  <button
-                    key={l.id}
-                    onClick={() => update("expertiseLevel", l.id)}
-                    style={{ ...chip(s.expertiseLevel === l.id), flex: 1, textAlign: "left" }}
-                  >
-                    <div style={{ fontWeight: 700 }}>{l.label}</div>
-                    <div style={{ fontSize: 11.5, color: "#8C7B7E", fontWeight: 400 }}>{l.desc}</div>
-                  </button>
-                ))}
-              </div>
-
-              <label style={fieldLabel}>使う予定のAI（任意）</label>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {TOOLS.map((t) => (
-                  <button key={t} onClick={() => update("aiTool", t)} style={chip(s.aiTool === t)}>
-                    {t}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {step === 3 && (
-            <div>
-              <h2 style={sectionTitle}>完成図面 — このままコピーして使えます</h2>
-              <textarea
-                ref={promptRef}
-                readOnly
-                value={prompt}
-                onFocus={(e) => e.target.select()}
-                style={{
-                  width: "100%",
-                  boxSizing: "border-box",
-                  background: "#3A2F35",
-                  color: "#FFE9D6",
-                  padding: "18px 16px",
-                  fontSize: 14,
-                  lineHeight: 1.7,
-                  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-                  whiteSpace: "pre-wrap",
-                  wordBreak: "break-word",
-                  marginTop: 14,
-                  border: "none",
-                  borderRadius: 18,
-                  resize: "vertical",
-                  height: 260,
-                }}
-              />
-              <div style={{ fontSize: 11.5, color: "#B3A5A8", marginTop: 6 }}>
-                ボタンが反応しない場合は、上のテキストをタップ／クリックすると全選択されるので、Ctrl+C（Macは⌘+C）でコピーできます。
-              </div>
-              <button onClick={handleCopy} style={copyBtn}>
-                {copied ? <Check size={15} /> : <Copy size={15} />}
-                {copied ? "コピーしました" : "プロンプトをコピー"}
-              </button>
-              {copyFailed && (
-                <div style={{ marginTop: 8, fontSize: 12, color: "#3E68C7", fontWeight: 600 }}>
-                  自動コピーができませんでした。上のテキストが選択状態になっているので、Ctrl+C（Macは⌘+C）でコピーしてください。
-                </div>
-              )}
-
-              <div style={{ marginTop: 24 }}>
-                <label style={fieldLabel}>
-                  もう一声！やっぱりここが欲しい、があれば
-                  <HelpNote>あとから思いついた条件をここに書くと、末尾に「追加のお願い」として反映されます。</HelpNote>
-                </label>
-                <textarea
-                  value={s.extraRequest}
-                  onChange={(e) => update("extraRequest", e.target.value)}
-                  placeholder="例：専門用語を使う場合は必ずカッコで説明を添えてほしい"
-                  style={textareaStyle}
-                  rows={2}
-                />
-              </div>
-
-              <div style={{ marginTop: 26 }}>
-                <div style={{ fontSize: 11, letterSpacing: "0.1em", color: "#2FB6AA", fontWeight: 700, marginBottom: 10 }}>
-                  ✨ この設計図に使われている工夫
-                </div>
-                <div style={{ display: "grid", gap: 10 }}>
-                  {PRINCIPLES.map((p) => (
-                    <div key={p.tag} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                      <div
-                        style={{
-                          fontSize: 11,
-                          fontWeight: 700,
-                          color: "#2F52A8",
-                          background: "#E4EBFF",
-                          borderRadius: 999,
-                          padding: "3px 10px",
-                          height: "fit-content",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {p.tag}
-                      </div>
-                      <div style={{ fontSize: 13, color: "#4A3F41", lineHeight: 1.5 }}>{p.body}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <button onClick={reset} style={resetBtn}>
-                <RotateCcw size={13} />
-                最初からやり直す
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Nav */}
-        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 18 }}>
-          <button
-            onClick={() => setStep((v) => Math.max(0, v - 1))}
-            disabled={step === 0}
-            style={{ ...navBtn, visibility: step === 0 ? "hidden" : "visible" }}
-          >
-            <ArrowLeft size={14} /> 戻る
-          </button>
-          {step < 3 && (
-            <button
-              onClick={() => setStep((v) => Math.min(3, v + 1))}
-              disabled={!canNext}
-              style={{ ...navBtn, opacity: canNext ? 1 : 0.4, cursor: canNext ? "pointer" : "not-allowed" }}
-            >
-              {step === 2 ? "設計図を完成させる" : "次へ"} <ArrowRight size={14} />
-            </button>
-          )}
-        </div>
-
-        <div style={{ textAlign: "center", marginTop: 32, fontSize: 11.5, color: "#B3A5A8" }}>
-          <a
-            href="https://note.com/cleaning3104"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: "#8C7B7E", textDecoration: "none", fontWeight: 700 }}
-          >
-            PROMPT LAB
-          </a>{" "}
-          by さとぽん
-          <span style={{ margin: "0 6px" }}>·</span>
-          <button
-            onClick={() => setShowChangelog((v) => !v)}
-            style={{
-              background: "none",
-              border: "none",
-              color: "#B3A5A8",
-              textDecoration: "underline",
-              fontSize: 11.5,
-              cursor: "pointer",
-              fontFamily: "inherit",
-              padding: 0,
-            }}
-          >
-            ver.{VERSION}（更新履歴）
-          </button>
-        </div>
-
-        {showChangelog && (
-          <div
-            style={{
-              marginTop: 12,
-              background: "#FFFFFF",
-              borderRadius: 16,
-              padding: "16px 18px",
-              boxShadow: "0 4px 14px rgba(0,0,0,0.06)",
-              maxWidth: 420,
-              marginLeft: "auto",
-              marginRight: "auto",
-            }}
-          >
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#8C7B7E", marginBottom: 8 }}>更新履歴</div>
-            <div style={{ display: "grid", gap: 8 }}>
-              {CHANGELOG.map((c) => (
-                <div key={c.version} style={{ fontSize: 12, color: "#4A3F41", lineHeight: 1.5 }}>
-                  <span style={{ fontWeight: 700 }}>v{c.version}</span>
-                  <span style={{ color: "#B3A5A8" }}> ({c.date})</span> — {c.notes}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+  <div class="card">
+    <h2>このサイトについて</h2>
+    <p style="font-size: 13.5px; line-height: 1.8; margin: 0;">
+      「AIに何を伝えればいいか分からない」という方向けに、質問に答えていくだけでChatGPTやClaudeなどにそのまま貼れる高品質なプロンプトが完成するツールです。全6ジャンル、それぞれ単体でもセットでも使えます。
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>ラインナップ</h2>
+    <div class="tool-list">
+      <div class="tool-item">
+        <span class="dot" style="background:#5B8DEF"></span>
+        <div><div class="name">業務効率化プロンプト設計ツール</div><div class="desc">データ整理・分析・自動化のお願い方を設計</div></div>
+      </div>
+      <div class="tool-item">
+        <span class="dot" style="background:#FF8A4C"></span>
+        <div><div class="name">画像生成プロンプト設計ツール</div><div class="desc">Midjourney・Stable Diffusionなど向け</div></div>
+      </div>
+      <div class="tool-item">
+        <span class="dot" style="background:#FF6F91"></span>
+        <div><div class="name">なんでも相談プロンプト設計ツール</div><div class="desc">悩みごとの相談相手を設計</div></div>
+      </div>
+      <div class="tool-item">
+        <span class="dot" style="background:#34B87A"></span>
+        <div><div class="name">文章作成プロンプト設計ツール</div><div class="desc">ブログ・SNS投稿・キャッチコピーなど</div></div>
+      </div>
+      <div class="tool-item">
+        <span class="dot" style="background:#9B7BEF"></span>
+        <div><div class="name">学習・勉強プロンプト設計ツール</div><div class="desc">資格対策・要約・暗記のサポート</div></div>
+      </div>
+      <div class="tool-item">
+        <span class="dot" style="background:#E0A421"></span>
+        <div><div class="name">旅行プランニングプロンプト設計ツール</div><div class="desc">行程表・おすすめスポットを自動提案</div></div>
       </div>
     </div>
-  );
-}
+  </div>
 
-const COLORS = {
-  bg: "#FFF6EE",
-  card: "#FFFFFF",
-  ink: "#4A3F41",
-  inkSoft: "#8C7B7E",
-  pink: "#5B8DEF",
-  pinkSoft: "#E4EBFF",
-  mint: "#2FB6AA",
-  mintSoft: "#DFF7F4",
-  yellow: "#FFC93C",
-  yellowSoft: "#FFF3D6",
-};
+  <div class="card">
+    <h2>使い方</h2>
+    <div class="steps">
+      <div class="step"><span class="num">1</span>下記のnoteから、使いたいツール（単品）またはセットを購入</div>
+      <div class="step"><span class="num">2</span>購入した記事内に記載されている「合言葉」を確認</div>
+      <div class="step"><span class="num">3</span>各ツールのページを開き、合言葉を入力</div>
+      <div class="step"><span class="num">4</span>質問に答えるだけで、プロンプトが完成</div>
+    </div>
+    <div class="note-box" style="margin-top: 16px;">
+      合言葉は購入者向けにnote記事内でお伝えしています。ツールのURLはこのページからは直接リンクしていません。noteの記事内リンクからアクセスしてください。
+    </div>
+  </div>
 
-const headingFont =
-  "'Zen Maru Gothic', 'Hiragino Maru Gothic ProN', 'UD Digi Kyokasho NK-R', 'Yu Gothic', sans-serif";
+  <a class="cta" href="https://note.com/cleaning3104" target="_blank" rel="noopener noreferrer">
+    noteでツールを見る
+  </a>
 
-const sectionTitle = {
-  margin: 0,
-  fontFamily: headingFont,
-  fontSize: 20,
-  fontWeight: 700,
-  color: COLORS.ink,
-};
+  <div class="footer">PROMPT LAB by さとぽん</div>
 
-const sectionSub = {
-  margin: "6px 0 0",
-  fontSize: 13,
-  color: COLORS.inkSoft,
-};
-
-const fieldLabel = {
-  display: "block",
-  fontSize: 13,
-  fontWeight: 700,
-  color: COLORS.ink,
-  margin: "18px 0 8px",
-};
-
-const textareaStyle = {
-  width: "100%",
-  border: `2px solid ${COLORS.pinkSoft}`,
-  borderRadius: 16,
-  background: "#FFFBF8",
-  padding: "12px 14px",
-  fontSize: 16,
-  fontFamily: "inherit",
-  resize: "vertical",
-  boxSizing: "border-box",
-  color: COLORS.ink,
-};
-
-const chip = (active) => ({
-  padding: "10px 16px",
-  fontSize: 13,
-  borderRadius: 999,
-  border: active ? `2px solid ${COLORS.pink}` : `2px solid #F1E4E8`,
-  background: active ? COLORS.pinkSoft : "#FFFFFF",
-  color: active ? "#2F52A8" : COLORS.ink,
-  fontWeight: active ? 700 : 500,
-  cursor: "pointer",
-  fontFamily: "inherit",
-});
-
-const copyBtn = {
-  marginTop: 14,
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 8,
-  padding: "12px 22px",
-  borderRadius: 999,
-  background: COLORS.pink,
-  color: "#FFFFFF",
-  border: "none",
-  fontSize: 14,
-  fontWeight: 700,
-  cursor: "pointer",
-  boxShadow: "0 4px 0 #3E68C7",
-};
-
-const resetBtn = {
-  marginTop: 22,
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 6,
-  padding: "9px 16px",
-  borderRadius: 999,
-  background: "#FFFFFF",
-  color: COLORS.inkSoft,
-  border: "2px solid #F1E4E8",
-  fontSize: 12.5,
-  cursor: "pointer",
-};
-
-const navBtn = {
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 6,
-  padding: "11px 22px",
-  borderRadius: 999,
-  background: COLORS.ink,
-  color: "#FFFFFF",
-  border: "none",
-  fontSize: 13.5,
-  fontWeight: 700,
-  cursor: "pointer",
-  boxShadow: "0 4px 0 #2E2628",
-};
-
-const chipButtonSmall = {
-  padding: "6px 12px",
-  borderRadius: 999,
-  border: "1.5px solid #F1E4E8",
-  background: "#FFFFFF",
-  color: COLORS.ink,
-  fontSize: 11.5,
-  fontWeight: 700,
-  cursor: "pointer",
-  fontFamily: "inherit",
-  whiteSpace: "nowrap",
-};
-
-ReactDOM.createRoot(document.getElementById("root")).render(<PromptBlueprint />);
-
-</script>
-
-<script>
-  // Babelの自動変換だと "automatic runtime" になり import 文が入って
-  // ブラウザ上で構文エラーになるため、classic runtime を明示して手動で変換・実行する
-  (function () {
-    const source = document.getElementById("app-source").textContent;
-    const transformed = Babel.transform(source, {
-      presets: [["react", { runtime: "classic" }]],
-    }).code;
-    try {
-      // eslint-disable-next-line no-eval
-      (0, eval)(transformed);
-    } catch (e) {
-      document.getElementById("root").innerHTML =
-        "<div style='padding:24px;font-family:sans-serif;color:#B0472F;'>読み込みエラーが発生しました: " +
-        (e && e.message ? e.message : e) +
-        "</div>";
-      console.error(e);
-    }
-  })();
-</script>
+</div>
 </body>
 </html>
